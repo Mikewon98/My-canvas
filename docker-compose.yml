@@ -1,0 +1,61 @@
+services:
+  watchtower:
+    image: nickfedor/watchtower
+    restart: unless-stopped
+    command:
+      - "--label-enable"
+      - "--rolling-restart"
+      - "--include-restarting"
+      - "--stop-timeout"
+      - "60s"
+      - "--scope=error-narrator"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300
+      - REPO_USER=mikewon98
+      - REPO_PASS=${GITHUB_TOKEN}
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=${DISCORD_WEBHOOK_URL}
+  error-narrator:
+    image: ghcr.io/mikewon98/error-narrator-web:stable
+    restart: unless-stopped
+    networks:
+      - portfolio_default
+    labels:
+      - "traefik.enable=true"
+
+      # Main HTTPS router
+      - "traefik.http.routers.error-narrator.rule=Host(`errornarrator.michaelyze.com`)"
+      - "traefik.http.routers.error-narrator.entrypoints=websecure"
+      - "traefik.http.routers.error-narrator.tls.certresolver=myresolver"
+
+      # HTTP redirect router
+      - "traefik.http.routers.error-narrator-http.rule=Host(`errornarrator.michaelyze.com`)"
+      - "traefik.http.routers.error-narrator-http.middlewares=redirect-to-https-en"
+      - "traefik.http.routers.error-narrator-http.entrypoints=web"
+
+      # Service configuration
+      - "traefik.http.services.error-narrator.loadbalancer.server.port=3000"
+
+      # Middlewares
+      - "traefik.http.middlewares.redirect-to-https-en.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.redirect-to-https-en.redirectscheme.scheme=https"
+
+      # Rate limiting (protection against bots)
+      - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
+      - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
+      - "traefik.http.middlewares.rate-limit.ratelimit.period=1s"
+
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=error-narrator"
+
+    env_file:
+      - .env
+
+networks:
+  portfolio_default:
+    external: true
