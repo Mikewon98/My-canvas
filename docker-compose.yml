@@ -8,7 +8,7 @@ services:
       - "--include-restarting"
       - "--stop-timeout"
       - "60s"
-      - "--scope=error-narrator"
+      - "--scope=my-canvas"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
@@ -19,8 +19,8 @@ services:
       - REPO_PASS=${GITHUB_TOKEN}
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_NOTIFICATION_URL=${DISCORD_WEBHOOK_URL}
-  error-narrator:
-    image: ghcr.io/mikewon98/error-narrator-web:stable
+  my-canvas:
+    image: ghcr.io/mikewon98/my-canvas:stable
     restart: unless-stopped
     networks:
       - portfolio_default
@@ -28,17 +28,17 @@ services:
       - "traefik.enable=true"
 
       # Main HTTPS router
-      - "traefik.http.routers.error-narrator.rule=Host(`mycanvas.michaelyze.com`)"
-      - "traefik.http.routers.error-narrator.entrypoints=websecure"
-      - "traefik.http.routers.error-narrator.tls.certresolver=myresolver"
+      - "traefik.http.routers.my-canvas.rule=Host(`mycanvas.michaelyze.com`)"
+      - "traefik.http.routers.my-canvas.entrypoints=websecure"
+      - "traefik.http.routers.my-canvas.tls.certresolver=myresolver"
 
       # HTTP redirect router
-      - "traefik.http.routers.error-narrator-http.rule=Host(`mycanvas.michaelyze.com`)"
-      - "traefik.http.routers.error-narrator-http.middlewares=redirect-to-https-en"
-      - "traefik.http.routers.error-narrator-http.entrypoints=web"
+      - "traefik.http.routers.my-canvas-http.rule=Host(`mycanvas.michaelyze.com`)"
+      - "traefik.http.routers.my-canvas-http.middlewares=redirect-to-https-en"
+      - "traefik.http.routers.my-canvas-http.entrypoints=web"
 
       # Service configuration
-      - "traefik.http.services.error-narrator.loadbalancer.server.port=3000"
+      - "traefik.http.services.my-canvas.loadbalancer.server.port=3000"
 
       # Middlewares
       - "traefik.http.middlewares.redirect-to-https-en.redirectscheme.permanent=true"
@@ -51,7 +51,7 @@ services:
 
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
-      - "com.centurylinklabs.watchtower.scope=error-narrator"
+      - "com.centurylinklabs.watchtower.scope=my-canvas"
 
     env_file:
       - .env
