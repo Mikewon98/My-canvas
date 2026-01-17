@@ -28,12 +28,12 @@ services:
       - "traefik.enable=true"
 
       # Main HTTPS router
-      - "traefik.http.routers.error-narrator.rule=Host(`errornarrator.michaelyze.com`)"
+      - "traefik.http.routers.error-narrator.rule=Host(`mycanvas.michaelyze.com`)"
       - "traefik.http.routers.error-narrator.entrypoints=websecure"
       - "traefik.http.routers.error-narrator.tls.certresolver=myresolver"
 
       # HTTP redirect router
-      - "traefik.http.routers.error-narrator-http.rule=Host(`errornarrator.michaelyze.com`)"
+      - "traefik.http.routers.error-narrator-http.rule=Host(`mycanvas.michaelyze.com`)"
       - "traefik.http.routers.error-narrator-http.middlewares=redirect-to-https-en"
       - "traefik.http.routers.error-narrator-http.entrypoints=web"
 
