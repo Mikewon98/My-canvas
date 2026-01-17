@@ -181,7 +181,7 @@ export default function Home() {
                 points: [...scribble.points, x, y],
               };
             }
-            return scribbles;
+            return scribble;
           })
         );
         break;
