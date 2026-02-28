@@ -11,12 +11,12 @@ services:
       - "--scope=my-canvas"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
     environment:
-      - WATCHTOWER_POLL_INTERVAL=300
-      - REPO_USER=mikewon98
-      - REPO_PASS=${GITHUB_TOKEN}
+      - WATCHTOWER_POLL_INTERVAL=540
+      - DOCKER_CONFIG=/config.json
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_NOTIFICATION_URL=${DISCORD_WEBHOOK_URL}
   my-canvas:
